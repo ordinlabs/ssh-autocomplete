@@ -1,0 +1,54 @@
+# yaml-language-server: $schema=https://goreleaser.com/static/schema.json
+version: 2
+builds:
+  - main: ./main.go
+    binary: ssh-autocomplete
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    ignore:
+      - goos: windows
+        goarch: arm64
+
+archives:
+  - format: tar.gz
+    format_overrides:
+      - goos: windows
+        format: zip
+
+checksum:
+  name_template: 'checksums.txt'
+
+release:
+  github:
+    owner: ordinlabs
+    name: ssh-autocomplete
+
+brews:
+  - repository:
+      owner: ordinlabs
+      name: homebrew-tap
+    homepage: https://github.com/ordinlabs/ssh-autocomplete
+    description: "SSH host autocompletion helper for bash, zsh, and PowerShell"
+    license: "MIT"
+
+winget:
+  - publisher: OrdinLabs
+    short_description: "SSH host autocompletion helper"
+    license: "MIT"
+    repository:
+      owner: ordinlabs
+      name: winget-pkgs
+      branch: "ssh-autocomplete-{{.Version}}"
+      pull_request:
+        enabled: true
+        base:
+          owner: microsoft
+          name: winget-pkgs
+          branch: master

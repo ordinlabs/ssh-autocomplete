@@ -1,0 +1,10 @@
+# Built binary
+ssh-autocomplete
+ssh-autocomplete.exe
+
+# GoReleaser output
+dist/
+
+# Test coverage
+coverage.out
+coverage.html
