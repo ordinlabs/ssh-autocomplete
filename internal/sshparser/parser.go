@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -17,10 +18,19 @@ type HostParser struct {
 }
 
 // NewHostParser creates a HostParser with default settings.
+// The cache TTL can be overridden by setting the ORDIN_SSH_AUTOCOMPLETE_CACHE_TTL
+// environment variable to a value in seconds.
 func NewHostParser() *HostParser {
+	ttl := 10 * time.Second
+	if env := os.Getenv("ORDIN_SSH_AUTOCOMPLETE_CACHE_TTL"); env != "" {
+		if seconds, err := strconv.Atoi(env); err == nil && seconds >= 0 {
+			ttl = time.Duration(seconds) * time.Second
+		}
+	}
+
 	return &HostParser{
 		CacheDir: os.TempDir(),
-		CacheTTL: 10 * time.Second,
+		CacheTTL: ttl,
 	}
 }
 
@@ -29,7 +39,8 @@ type cachedHosts struct {
 	Hosts     []string  `json:"hosts"`
 }
 
-func (p *HostParser) cacheFilePath() string {
+// CacheFilePath returns the path to the cache file.
+func (p *HostParser) CacheFilePath() string {
 	return filepath.Join(p.CacheDir, "ssh-autocomplete-cache.json")
 }
 
@@ -150,7 +161,7 @@ func (p *HostParser) handleInclude(line string, baseDir string, visited map[stri
 }
 
 func (p *HostParser) loadCache() ([]string, error) {
-	data, err := os.ReadFile(p.cacheFilePath())
+	data, err := os.ReadFile(p.CacheFilePath())
 	if err != nil {
 		return nil, err
 	}
@@ -178,7 +189,7 @@ func (p *HostParser) writeCache(hosts []string) error {
 		return err
 	}
 
-	return os.WriteFile(p.cacheFilePath(), data, 0600)
+	return os.WriteFile(p.CacheFilePath(), data, 0600)
 }
 
 func defaultSSHConfigPath() string {
