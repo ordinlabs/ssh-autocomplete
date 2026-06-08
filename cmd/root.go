@@ -11,7 +11,7 @@ func newRootCmd() *cobra.Command {
 		Long:  "Parses SSH configuration files and provides host name autocompletion for bash, zsh, and PowerShell.",
 	}
 
-	cmd.AddCommand(newGenerateCmd())
+	cmd.AddCommand(newListCmd())
 	cmd.AddCommand(newSetupCmd())
 	cmd.AddCommand(newUninstallCmd())
 

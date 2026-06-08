@@ -17,8 +17,8 @@ const (
 )
 
 // generateCommand returns the command string that completion scripts should use
-// to invoke ssh-autocomplete. In dev mode (go run), this returns "go run <projectDir>",
-// otherwise it returns "ssh-autocomplete".
+// to invoke ssh-autocomplete. In dev mode (go run), this returns a command that
+// runs from the project directory, otherwise it returns "ssh-autocomplete".
 func generateCommand() string {
 	exe, err := os.Executable()
 	if err != nil {
@@ -34,7 +34,7 @@ func generateCommand() string {
 		if err != nil {
 			return "ssh-autocomplete"
 		}
-		return fmt.Sprintf("go run %s", wd)
+		return fmt.Sprintf("go run -C \"%s\" .", wd)
 	}
 
 	return "ssh-autocomplete"
@@ -356,6 +356,7 @@ var legacyPatterns = []string{
 	".wsm/ssh-autocomplete",
 	"_ssh_host_complete",
 	"_complete_ssh_hosts",
+	"ssh autocomplete generate",
 }
 
 // hasMarkerBlock checks if a file contains the ssh-autocomplete marker block.
@@ -547,7 +548,7 @@ func bashCompletionScript(invokeCmd string) string {
 _ssh_host_complete() {
     local cur="${COMP_WORDS[COMP_CWORD]}"
     local hosts
-    hosts=$(%s generate 2>/dev/null)
+    hosts=$(%s list 2>/dev/null)
     COMPREPLY=($(compgen -W "$hosts" -- "$cur"))
     return 0
 }
@@ -562,7 +563,7 @@ func zshCompletionScript(invokeCmd string) string {
 	return fmt.Sprintf(`# SSH host completion for zsh
 _ssh_host_complete() {
     local hosts
-    hosts=(${(f)"$(%s generate 2>/dev/null)"})
+    hosts=(${(f)"$(%s list 2>/dev/null)"})
     compadd -a hosts
 }
 
@@ -576,7 +577,7 @@ func powershellCompletionScript(invokeCmd string) string {
 	return fmt.Sprintf(`# SSH host completion for PowerShell
 Register-ArgumentCompleter -CommandName ssh, scp, sftp -Native -ScriptBlock {
     param($wordToComplete, $commandAst, $cursorPosition)
-    $hosts = %s generate 2>$null
+    $hosts = %s list 2>$null
     if ($wordToComplete -match '^(?<user>[-\w/\\]+)@(?<host>[-.\w]+)$') {
         $hosts | Where-Object { $_ -like "$($Matches['host'].ToString())*" } `+"`"+`
             | ForEach-Object { "$($Matches['user'].ToString())@$_" }

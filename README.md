@@ -74,23 +74,23 @@ Removes the completion block from your shell profile and deletes the script file
 ssh-autocomplete uninstall
 ```
 
-### Generate host names
+### List host names
 
 Outputs all non-wildcard host names from your SSH config, one per line:
 
 ```sh
-ssh-autocomplete generate
+ssh-autocomplete list
 ```
 
 Use `--no-cache` to bypass the 10-second cache:
 
 ```sh
-ssh-autocomplete generate --no-cache
+ssh-autocomplete list --no-cache
 ```
 
 ## How it works
 
-The `generate` command parses `~/.ssh/config`, follows `Include` directives recursively, extracts all `Host` entries, filters out wildcards, and outputs the deduplicated sorted list. Completion scripts call this command when tab is pressed.
+The `list` command parses `~/.ssh/config`, follows `Include` directives recursively, extracts all `Host` entries, filters out wildcards, and outputs the deduplicated sorted list. Completion scripts call this command when tab is pressed.
 
 Results are cached in a temp file for 10 seconds so repeated tab presses don't re-parse the config each time.
 
@@ -98,7 +98,7 @@ Results are cached in a temp file for 10 seconds so repeated tab presses don't r
 
 ```sh
 # Run directly
-go run . generate
+go run . list
 
 # Setup in dev mode (uses "go run <project_dir>" in completion scripts)
 go run . setup
@@ -107,7 +107,7 @@ go run . setup
 go build -o ssh-autocomplete .
 ```
 
-When run via `go run`, the setup command automatically detects dev mode and writes completion scripts that invoke `go run <project_dir> generate` instead of assuming `ssh-autocomplete` is on your PATH.
+When run via `go run`, the setup command automatically detects dev mode and writes completion scripts that invoke `go run <project_dir> list` instead of assuming `ssh-autocomplete` is on your PATH.
 
 ## License
 

@@ -7,12 +7,12 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func newGenerateCmd() *cobra.Command {
+func newListCmd() *cobra.Command {
 	var noCache bool
 
 	cmd := &cobra.Command{
-		Use:   "generate",
-		Short: "Output SSH host names for shell completion",
+		Use:   "list",
+		Short: "List SSH host names",
 		Long:  "Parses SSH configuration files and outputs non-wildcard host names, one per line. Results are cached for 10 seconds unless --no-cache is specified.",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			parser := sshparser.NewHostParser()
