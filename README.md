@@ -88,11 +88,25 @@ Use `--no-cache` to bypass the 10-second cache:
 ssh-autocomplete list --no-cache
 ```
 
+### Cache management
+
+Clear the cached host list (forces a fresh parse on the next completion):
+
+```sh
+ssh-autocomplete cache clear
+```
+
 ## How it works
 
 The `list` command parses `~/.ssh/config`, follows `Include` directives recursively, extracts all `Host` entries, filters out wildcards, and outputs the deduplicated sorted list. Completion scripts call this command when tab is pressed.
 
 Results are cached in a temp file for 10 seconds so repeated tab presses don't re-parse the config each time.
+
+## Configuration
+
+| Environment Variable | Default | Description |
+|---|---|---|
+| `ORDIN_SSH_AUTOCOMPLETE_CACHE_TTL` | `10` | Cache lifetime in seconds. Set to `0` to disable caching. |
 
 ## Development
 
